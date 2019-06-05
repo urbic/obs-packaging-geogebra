@@ -1,0 +1,46 @@
+diff --git a/desktop/build.gradle b/desktop/build.gradle
+index 501b4cc28..1cfba872a 100644
+--- a/desktop/build.gradle
++++ b/desktop/build.gradle
+@@ -34,7 +34,14 @@ eclipse.classpath.file {
+ 
+ File javaHome = new File(System.properties['java.home'])
+ javaHome = javaHome.name == 'jre' ? javaHome.parentFile : javaHome
+-String jfxrtLocation = new File("${javaHome}/jre/lib/jfxrt.jar").absolutePath
++//TZ: String jfxrtLocation = new File("${javaHome}/jre/lib/jfxrt.jar").absolutePath
++String jfxrtBaseLocation = new File("${javaHome}/../openjfx/rt/lib/javafx.base.jar").absolutePath
++String jfxrtControlsLocation = new File("${javaHome}/../openjfx/rt/lib/javafx.controls.jar").absolutePath
++String jfxrtFXMLLocation = new File("${javaHome}/../openjfx/rt/lib/javafx.fxml.jar").absolutePath
++String jfxrtGraphicsLocation = new File("${javaHome}/../openjfx/rt/lib/javafx.graphics.jar").absolutePath
++String jfxrtMediaLocation = new File("${javaHome}/../openjfx/rt/lib/javafx.media.jar").absolutePath
++String jfxrtSwingLocation = new File("${javaHome}/../openjfx/rt/lib/javafx.swing.jar").absolutePath
++String jfxrtWebLocation = new File("${javaHome}/../openjfx/rt/lib/javafx.web.jar").absolutePath
+ // JavaFX locations for JDK7, JDK7, JDK8
+ for (location in ['lib/jfxrt.jar', 'jre/lib/jfxrt.jar', 'jre/lib/ext/jfxrt.jar']) {
+     File file = new File(javaHome, location)
+@@ -61,7 +68,13 @@ dependencies {
+     compile project(':jogl2')
+     compile project(':input3D:impl')
+     compile project(':giac-jni')
+-    compile ext, files(jfxrtLocation)
++    compile ext, files(jfxrtBaseLocation)
++    compile ext, files(jfxrtControlsLocation)
++    compile ext, files(jfxrtFXMLLocation)
++    compile ext, files(jfxrtGraphicsLocation)
++    compile ext, files(jfxrtMediaLocation)
++    compile ext, files(jfxrtSwingLocation)
++    compile ext, files(jfxrtWebLocation)
+ 
+     runtime "com.jogamp:jogl-all:$joglVersion:natives-linux-amd64",
+         "com.jogamp:jogl-all:$joglVersion:natives-windows-i586",
+diff --git a/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ToolbarConfigPanel.java b/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ToolbarConfigPanel.java
+index d3011d334..559d9b046 100644
+--- a/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ToolbarConfigPanel.java
++++ b/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ToolbarConfigPanel.java
+@@ -634,4 +634,4 @@ public class ToolbarConfigPanel extends JPanel
+ 													 */
+ 	}
+ 
+-}
+\ No newline at end of file
++}

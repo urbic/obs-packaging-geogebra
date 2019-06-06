@@ -1,7 +1,6 @@
 SHELL:=/bin/bash
 
-NAME=$(shell cat NAME)
-VERSION=$(shell cat VERSION)
+BUILDDIR=$(NAME)-$(VERSION)
 BOOTSTRAPDIR=$(NAME)-bootstrap-$(VERSION)
 
 .DEFAULT: all
@@ -11,22 +10,19 @@ all: copy-sources
 
 prepare:
 	@echo '[Prepare]'
-	rm -rf $(NAME)-$(VERSION) $(BOOTSTRAPDIR) obs
-	mkdir $(NAME)-$(VERSION) $(BOOTSTRAPDIR) obs
-	tar -C $(NAME)-$(VERSION) --strip-components=1 -xf $(NAME)-$(VERSION).tar.xz
-	patch -d $(NAME)-$(VERSION) -p1 <$(NAME)-*.patch
+	rm -rf $(BUILDDIR) $(BOOTSTRAPDIR) obs
+	mkdir $(BUILDDIR) $(BOOTSTRAPDIR) obs
+	tar -C $(BUILDDIR) --strip-components=1 -xf $(NAME)-$(VERSION).tar.xz
+	patch -d $(BUILDDIR) -p1 <$(NAME)-*.patch
 
 build: prepare
 	@echo '[Build]'
-	( \
-	cd $(NAME)-$(VERSION) && \
-	./gradlew \
+	cd $(BUILDDIR) && ./gradlew \
 		--gradle-user-home /tmp/gradle --project-cache-dir /tmp/gradle-project \
 		-xtest -xcheck \
 		-xpmdMain -xpmdTest \
 		-xcheckstyleGpl -xcheckstyleMain -xcheckstyleNonfree -xcheckstyleTest \
-		build \
-	)
+		build
 	mv /tmp/gradle* $(BOOTSTRAPDIR)
 
 package-bootstrap: build
@@ -40,4 +36,4 @@ copy-sources: package-bootstrap
 	for specfile in $(NAME){,-bootstrap}.spec.m4; do \
 		m4 -D__NAME__=$(NAME) -D__VERSION__=$(VERSION) $$specfile >obs/$${specfile//.m4}; \
 	done
-	cp $(NAME)-*.patch $(NAME)-$(VERSION).tar.xz obs
+	cp $(NAME)-*.patch $(NAME).desktop $(NAME).mime $(BUILDDIR).tar.xz obs

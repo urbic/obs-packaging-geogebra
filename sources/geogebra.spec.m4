@@ -23,15 +23,15 @@ Summary:        Free mathematics software for learning and teaching
 Url:            https://www.geogebra.org/
 Group:          Productivity/Scientific/Math
 Source0:        %{name}-%{version}.tar.xz
-Source1:        %{name}.desktop
-Source2:        %{name}.mime
+Source1:        %{name}-bootstrap-%{version}.tar.xz
+Source2:        %{name}.desktop
+Source3:        %{name}.mime
 Patch0:         %{name}-001.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  xz
 BuildRequires:  java-devel >= 11
 BuildRequires:  openjfx
 BuildRequires:  unzip
-BuildRequires:  %{name}-bootstrap == %{version}
 #Provides:       mvn(:) == 
 ExclusiveArch:  x86_64
 Requires:       java >= 11
@@ -58,14 +58,11 @@ Quick Facts:
 
 
 %prep
-%setup -q -c -n %{name}-%{version}
-cd %{name}-%{version}
+%setup -b1 -q
 %patch0 -p1
-tar -C ../.. -xvf %{_libdir}/%{name}-bootstrap/%{name}-bootstrap-%{version}.tar.xz
 
 %build
-cp -aR ../%{name}-bootstrap-%{version}/* /tmp
-cd %{name}-%{version}
+%{__mv} -f ../%{name}-bootstrap-%{version}/* /tmp
 ./gradlew --offline --gradle-user-home /tmp/gradle --project-cache-dir /tmp/gradle-project \
 	-x test -x check \
 	-x pmdMain -x pmdTest \
@@ -74,7 +71,6 @@ cd %{name}-%{version}
 
 %install
 export NO_BRP_CHECK_BYTECODE_VERSION=true
-cd %{name}-%{version}
 
 mkdir -p %{buildroot}%{_javadir}
 
@@ -103,11 +99,11 @@ __CONF__
 
 # Desktop file
 %{__install} -dm0755 %{buildroot}%{_datadir}/applications
-%{__install} -m0644 %{S:1} %{buildroot}%{_datadir}/applications
+%{__install} -m0644 %{S:2} %{buildroot}%{_datadir}/applications
 
 # MIME file
 %{__install} -dm0755 %{buildroot}%{_datadir}/mime/packages
-%{__install} -Dm0644 %{S:2} %{buildroot}%{_datadir}/mime/packages/%{name}.xml
+%{__install} -Dm0644 %{S:3} %{buildroot}%{_datadir}/mime/packages/%{name}.xml
 
 # Icon file
 %{__install} -dm0755 %{buildroot}%{_datadir}/icons/hicolor/scalable/{apps,mimetypes}
@@ -137,5 +133,6 @@ __CONF__
 %{_datadir}/icons/hicolor
 %{_datadir}/mime/packages/%{name}.xml
 %license desktop/src/nonfree/resources/org/geogebra/desktop/_license.txt
+%doc README.md
 
 %changelog
